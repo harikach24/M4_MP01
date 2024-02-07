@@ -39,8 +39,11 @@ jobs:
           path: bikeshare_project/bikeshare_model/trained_models
       - name: Install dependencies
         run: pip install -r bikeshare_project/requirements/test_requirements.txt
+      - name: Package the build
+        working-directory: bikeshare_project
       - name: Test with pytest
         run: pytest
+
     
   build:
       needs: [train, test]
