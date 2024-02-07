@@ -6,25 +6,25 @@ on:
   workflow_dispatch:
   
 jobs:
-    train:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-      - name: Install dependencies
-        run: pip install -r requirements/requirements.txt
-      - name: Train and save pipeline
-        run: python bikeshare_model/train_pipeline.py
-      - uses: actions/upload-artifact@v2
+  train:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
       with:
-        name: my-trained-pipeline
-        path: bikeshare_model/trained_models/*.pkl
-        retention-days: 1
+        python-version: '3.10'
+    - name: Install dependencies
+      run: pip install -r requirements/requirements.txt
+    - name: Train and save pipeline
+      run: python bikeshare_model/train_pipeline.py
+    - uses: actions/upload-artifact@v2
+    with:
+      name: my-trained-pipeline
+      path: bikeshare_model/trained_models/*.pkl
+      retention-days: 1
         
-    test:
+  test:
       needs: train
       runs-on: ubuntu-latest
       steps:
@@ -42,7 +42,7 @@ jobs:
       - name: Test with pytest
         run: pytest
     
-    build:
+  build:
       needs: [train, test]
       runs-on: ubuntu-latest
       steps:
@@ -65,7 +65,7 @@ jobs:
           path: dist/*.whl
           retention-days: 1
       
-    push-image:
+  push-image:
       needs: [train, test, build]
       runs-on: ubuntu-latest
       steps:
@@ -93,5 +93,5 @@ jobs:
           DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
         run: docker push $DOCKER_USER/bikeshare-fastapi
   
-    - name: Logout to Docker hub
-      run: docker logout
+      - name: Logout to Docker hub
+        run: docker logout
